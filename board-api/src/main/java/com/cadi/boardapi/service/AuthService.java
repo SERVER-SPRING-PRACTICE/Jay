@@ -4,6 +4,8 @@ import com.cadi.boardapi.mapper.UserMapper;
 import com.cadi.boardapi.model.DefaultRes;
 import com.cadi.boardapi.model.LoginReq;
 import com.cadi.boardapi.dto.User;
+import com.cadi.boardapi.model.SignUpReq;
+import com.cadi.boardapi.util.PasswordUtil;
 import com.cadi.boardapi.util.ResponseMessage;
 import com.cadi.boardapi.util.StatusCode;
 import org.springframework.stereotype.Service;
@@ -35,5 +37,25 @@ public class AuthService {
             return DefaultRes.res(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, tokenDto);
         }
         return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_FAIL);
+    }
+
+    /**
+     * 회원가입
+     * @param signUpReq 회원가입 객체
+     * @return DefaultRes
+     */
+
+    public DefaultRes signUp (final SignUpReq signUpReq) {
+        // 비밀번호 확인
+        if(!signUpReq.getPassword().equals(signUpReq.getConfirmPw())) {
+            return DefaultRes.res(StatusCode.BAD_REQUEST, ResponseMessage.CONFIRM_USER_PW);
+        }
+
+        // pw 암호화
+        PasswordUtil util = new PasswordUtil();
+        signUpReq.setPassword(util.encryptSHA256(signUpReq.getPassword()));
+        // db create
+        userMapper.signUp(signUpReq.getId(), signUpReq.getPassword(), signUpReq.getName(), signUpReq.getEmail(), signUpReq.getPhone());
+        return DefaultRes.res(StatusCode.OK, ResponseMessage.CREATED_USER);
     }
 }

@@ -2,7 +2,9 @@ package com.cadi.boardapi.controller;
 
 import com.cadi.boardapi.model.DefaultRes;
 import com.cadi.boardapi.model.LoginReq;
+import com.cadi.boardapi.model.SignUpReq;
 import com.cadi.boardapi.service.AuthService;
+import com.cadi.boardapi.util.Auth;
 import com.cadi.boardapi.util.ResponseMessage;
 import com.cadi.boardapi.util.StatusCode;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,16 @@ public class UserController {
     public ResponseEntity login(@RequestBody final LoginReq loginReq) {
         try {
             return new ResponseEntity(authService.login(loginReq), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("signup")
+    public ResponseEntity signUp(@RequestBody final SignUpReq signUpReq) {
+        try {
+            return new ResponseEntity(authService.signUp(signUpReq), HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return new ResponseEntity(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
